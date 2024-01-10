@@ -190,7 +190,7 @@ class nupars(object):
         return keylist, arr.T
 
     def keys(self):
-        return list(self._dict)
+        return [k for k in list(self._dict) if k != 'nxyz']
 
     def __dir__(self):
         '''for autocompletion in ipython
@@ -253,7 +253,7 @@ class nupars(object):
         [shift] Base pair step shift.
         [slide] Base pair step slide.
         [rise] Base pair step rise.
-        [title] Base pair step tilt.
+        [tilt] Base pair step tilt.
         [roll] Base pair step roll.
         [twist] Base pair step twist.
         [xdisp] Helical X displacement.
