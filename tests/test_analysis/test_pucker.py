@@ -28,3 +28,10 @@ def test_pucker():
     # resrange=None
     data_full_residues = pt.pucker(traj, resrange=None)
     aa_eq(data_full_residues[:3].values, data_altona[:3].values)
+
+
+def test_multipucker():
+    traj = pt.iterload(fn('Test_NAstruct/adh026.3.pdb'))
+    state = pt.load_cpptraj_state(cm, traj)
+    state.run()
+    _ = pt.multipucker(traj, resrange=range(3))

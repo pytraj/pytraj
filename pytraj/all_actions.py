@@ -81,7 +81,7 @@ __all__ = [
     'rotation_matrix', 'rotdif', 'scale', 'search_neighbors', 'set_dihedral',
     'set_velocity', 'strip', 'superpose', 'surf', 'symmrmsd', 'ti', 'timecorr',
     'transform', 'translate', 'velocityautocorr', 'vector', 'volmap', 'volume',
-    'watershell', 'wavelet', 'xcorr', 'xtalsymm',
+    'watershell', 'wavelet', 'xcorr', 'xtalsymm', 'multipucker'
 ] # yapf: disable
 
 class DatasetType(StrEnum):
@@ -3146,9 +3146,9 @@ def multipucker(traj=None, top=None, name=None, puckertype=None,
                 theta=False, theta_out=None,
                 range360=False, offset=None,
                 dtype='dataset',
-                frame_indices=None):
+                frame_indices=None,
+                options=''):
     '''
-
     Parameters
     ----------
     traj : Trajectory-like
@@ -3179,54 +3179,36 @@ def multipucker(traj=None, top=None, name=None, puckertype=None,
     dtype : str, return type
     frame_indices : str
         Not currently utilized
+    options : str
+        Additional cpptraj options
 
     Returns
     -------
     Dataset
     '''
-    # Set name to default if name is not provided
-    name = name if name else "MyPuckers"
+    name = name or "MyPuckers"
+    resrange = f"resrange {'-'.join(map(str, resrange))}" if resrange else ""
+    _out = f"out {out}" if out else ""
 
-    # Obtain entire range if range is not provided
-    if resrange:
-        # Unsure how multiple ranges should be formatted for cpptraj
-        resrange = "resrange " + "-".join(str(i) for i in resrange)
-    else:
-        resrange = ""
-    # Set outfile if available
-    _out = "out " + out if out else ""
-
-    if type(puckertype) == list:
-        # Parse puckertype and atom list parameter
-        #     [puckertype <name>:<a0>:<a1>:<a2>:<a3>:<a4>[:<a5>] ...]
-        # Take name from first index
+    if isinstance(puckertype, list):
         pucker_name = puckertype[0]
-        _puckertype = ":".join(type for type in puckertype[1:])
-        _puckertype = "puckertype {0}:{1}".format(pucker_name, _puckertype)
-    elif type(puckertype) == str:
-        # String of desired [<pucker types>] parameter
-        #     should be nucleic, furanose, or pyranose
+        _puckertype = f"puckertype {pucker_name}:{':'.join(puckertype[1:])}"
+    elif isinstance(puckertype, str):
         _puckertype = puckertype.lower()
     else:
         _puckertype = ""
 
-    # Use amp file and set amplitude parameter if called
-    _amp_file= " ampout " + amp_out if amp_out else ""
-    amp = "amplitude" + _amp_file if amplitude else ""
+    _amp_file = f" ampout {amp_out}" if amp_out else ""
+    amp = f"amplitude{_amp_file}" if amplitude else ""
 
-    # Use theta file and set theta parameter if called
-    _theta_file = " thetaout " + theta_out if theta_out else ""
-    theta = "theta" + _theta_file if theta else ""
+    _theta_file = f" thetaout {theta_out}" if theta_out else ""
+    theta = f"theta{_theta_file}" if theta else ""
 
-    # Set whether or not range 360 is included
     _range360 = "range360" if range360 else ""
-
-    # Set offset based on user input
     offset_ = str(offset) if offset else ""
 
-    # Join all params into command for cpptraj to interpret
-    command = " ".join((name, _puckertype, resrange, _out, method,
-                        amp, theta, _range360, offset_))
+    command = " ".join(filter(None, [name, _puckertype, resrange, _out, method,
+                                     amp, theta, _range360, offset_, options]))
     c_dslist, _ = do_action(traj, command, c_action.Action_MultiPucker)
     return get_data_from_dtype(c_dslist, dtype=dtype)
 
