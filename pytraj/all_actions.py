@@ -3148,7 +3148,7 @@ def multipucker(traj=None, top=None, name=None, puckertype=None,
                 dtype='dataset',
                 frame_indices=None):
     '''
-    
+
     Parameters
     ----------
     traj : Trajectory-like
@@ -3180,14 +3180,14 @@ def multipucker(traj=None, top=None, name=None, puckertype=None,
     frame_indices : str
         Not currently utilized
 
-    Returns 
-    ------- 
-    Dataset 
+    Returns
+    -------
+    Dataset
     '''
     # Set name to default if name is not provided
     name = name if name else "MyPuckers"
 
-    # Obtain entire range if range is not provided 
+    # Obtain entire range if range is not provided
     if resrange:
         # Unsure how multiple ranges should be formatted for cpptraj
         resrange = "resrange " + "-".join(str(i) for i in resrange)
@@ -3205,7 +3205,7 @@ def multipucker(traj=None, top=None, name=None, puckertype=None,
         _puckertype = "puckertype {0}:{1}".format(pucker_name, _puckertype)
     elif type(puckertype) == str:
         # String of desired [<pucker types>] parameter
-        #     should be nucleic, furanose, or pyranose 
+        #     should be nucleic, furanose, or pyranose
         _puckertype = puckertype.lower()
     else:
         _puckertype = ""
@@ -3218,7 +3218,7 @@ def multipucker(traj=None, top=None, name=None, puckertype=None,
     _theta_file = " thetaout " + theta_out if theta_out else ""
     theta = "theta" + _theta_file if theta else ""
 
-    # Set whether or not range 360 is included 
+    # Set whether or not range 360 is included
     _range360 = "range360" if range360 else ""
 
     # Set offset based on user input
