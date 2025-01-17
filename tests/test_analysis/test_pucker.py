@@ -20,7 +20,7 @@ def test_pucker():
     state = pt.load_cpptraj_state(cm, traj)
     state.run()
 
-    data_altona = pt.pucker(traj, resrange=range(3))
+    data_altona = pt.pucker(traj, resrange=range(3))g
     data_cremer = pt.pucker(traj, resrange=range(3), method='cremer')
     aa_eq(data_altona.values, state.data[1:4].values)
     aa_eq(data_cremer.values, state.data[4:].values)
